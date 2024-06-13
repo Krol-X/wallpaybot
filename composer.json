@@ -24,6 +24,7 @@
         "symfony/framework-bundle": "6.4.*",
         "symfony/http-client": "6.4.*",
         "symfony/messenger": "6.4.*",
+        "symfony/monolog-bundle": "^3.10",
         "symfony/property-access": "6.4.*",
         "symfony/property-info": "6.4.*",
         "symfony/runtime": "6.4.*",
@@ -61,6 +62,9 @@
         "symfony/polyfill-php81": "*"
     },
     "scripts": {
+        "start-consumer": "php bin/console messenger:consume async -vv",
+        "stop-consumer": "pkill -f 'messenger:consume'",
+        "restart-consumer": "@stop-consumer && @start-consumer",
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd"

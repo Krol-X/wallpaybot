@@ -4,15 +4,15 @@ namespace App\Message;
 
 class FooMessage
 {
-    private string $message;
+    private string $content;
 
-    public function __construct(string $message)
+    public function __construct(string $content)
     {
-        $this->message = $message;
+        $this->content = $content;
     }
 
-    public function getMessage(): string
+    public function getContent(): string
     {
-        return $this->message;
+        return $this->content;
     }
 }

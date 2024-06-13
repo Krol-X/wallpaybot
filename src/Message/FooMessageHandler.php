@@ -3,10 +3,11 @@
 namespace App\Message;
 
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+// use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-#[AsMessageHandler]
-class FooMessageHandler
+// #[AsMessageHandler]
+class FooMessageHandler implements MessageHandlerInterface
 {
     private LoggerInterface $logger;
 
@@ -18,6 +19,6 @@ class FooMessageHandler
     public function __invoke(FooMessage $message): void
     {
         sleep(10);
-        $this->logger->info($message->getMessage());
+        $this->logger->info('Handling FooMessage', ['content' => $message->getContent()]);
     }
 }
