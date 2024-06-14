@@ -50,5 +50,7 @@ abstract class TelegramEventHandler implements TelegramEventHandlerInterface
         return false;
     }
 
-    abstract function defaultAction(TelegramEventMessageInterface $message): void;
+    function defaultAction(TelegramEventMessageInterface $message): void {
+
+    }
 }

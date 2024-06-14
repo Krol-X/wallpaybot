@@ -7,6 +7,7 @@ use App\Interface\Model\TelegramResponseInterface;
 use App\Model\TelegramResponse;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\DelayStamp;
 
 class TelegramEventMessage implements TelegramEventMessageInterface
 {
@@ -16,7 +17,7 @@ class TelegramEventMessage implements TelegramEventMessageInterface
 
     public function __construct(
         LoggerInterface $logger,
-        array $content
+        array           $content
     )
     {
         $this->logger = $logger;
@@ -35,9 +36,9 @@ class TelegramEventMessage implements TelegramEventMessageInterface
         return $this->data;
     }
 
-    public function getChatId(): int
+    public function getFromId(): int
     {
-        return $this->data['chat']['id'] ?? 0;
+        return $this->data['from']['id'] ?? 0;
     }
 
     public function getMessageId(): int
@@ -60,19 +61,24 @@ class TelegramEventMessage implements TelegramEventMessageInterface
         return isset($content['callback_query']);
     }
 
-    public function send(MessageBusInterface $bus): void
+    public function send(MessageBusInterface $bus, ?int $delay = null): void
     {
-        $chatId = $this->getChatId();
+        $chatId = $this->getFromId();
         if ($chatId === 0) {
             $this->logger->warning('Cannot send message: chat ID is missing');
             return;
         }
-        $bus->dispatch($this);
+
+        if ($delay) {
+            $bus->dispatch($this)->with(new DelayStamp($delay));
+        } else {
+            $bus->dispatch($this);
+        }
     }
 
     public function newResponse(string $text): TelegramResponseInterface
     {
-        $response = new TelegramResponse($this->getChatId());
+        $response = new TelegramResponse($this->getFromId());
         return $response->withMessage($text);
     }
 }

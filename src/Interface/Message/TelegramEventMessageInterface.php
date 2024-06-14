@@ -11,7 +11,7 @@ interface TelegramEventMessageInterface
 
     public function getData(): array;
 
-    public function getChatId(): int;
+    public function getFromId(): int;
 
     public function getMessageId(): int;
 
@@ -21,7 +21,7 @@ interface TelegramEventMessageInterface
 
     public function isQuery(): bool;
 
-    public function send(MessageBusInterface $bus): void;
+    public function send(MessageBusInterface $bus, ?int $delay): void;
 
     public function newResponse(string $text): TelegramResponseInterface;
 }

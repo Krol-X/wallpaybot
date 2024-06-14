@@ -6,11 +6,12 @@ class InlineKeyboard
 {
     private array $keyboard = [];
 
-    public function addButton(string $text, ?string $callbackData = null): self
+    public function addButton(string $text, string $callbackData): self
     {
-        $button = ['text' => $text];
-        if ($callbackData)
-            $button['callback_data'] = $callbackData;
+        $button = [
+            'text' => $text,
+            'callback_data' => $callbackData
+        ];
         $this->keyboard[] = [$button];
         return $this;
     }
