@@ -3,6 +3,7 @@
 namespace App\Message;
 
 use App\Abstract\Message\TelegramEventHandler;
+use App\Attribute\OnTelegramMessage;
 use App\Interface\Message\TelegramEventMessageInterface;
 use App\Interface\Service\TelegramServiceInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -16,9 +17,16 @@ class BotEventHandler extends TelegramEventHandler
     {
     }
 
+    #[OnTelegramMessage(command: '/start')]
+    public function start(TelegramEventMessageInterface $message): bool
+    {
+        $this->telegram->SendMessage($message->newResponse('Добрый день!'));
+        return true;
+    }
+
     function defaultAction(TelegramEventMessageInterface $message): void
     {
-        $response = $message->newResponseMessage('Вы сказали: ' . $message->getText());
+        $response = $message->newResponse('Вы сказали: ' . $message->getText());
         $this->telegram->sendMessage($response);
     }
 }

@@ -5,44 +5,24 @@ namespace App\Message;
 use App\Interface\Message\TelegramEventMessageInterface;
 use App\Interface\Model\TelegramResponseInterface;
 use App\Model\TelegramResponse;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-
-/*
-{
-    "update_id": 702982016,
-    "message": {
-      "message_id": 87,
-      "from": {
-        "id": 1868566649,
-        "is_bot": false,
-        "first_name": "Alex",
-        "last_name": "ᏦᎮᎧᏗ",
-        "username": "Krol_X",
-        "language_code": "ru",
-        "is_premium": true
-      },
-      "chat": {
-        "id": 1868566649,
-        "first_name": "Alex",
-        "last_name": "ᏦᎮᎧᏗ",
-        "username": "Krol_X",
-        "type": "private"
-      },
-      "date": 1718289606,
-      "text": "123"
-    }
-  }
-*/
 
 class TelegramEventMessage implements TelegramEventMessageInterface
 {
     private array $content;
     private array $data;
+    private LoggerInterface $logger;
 
-    public function __construct(array $content)
+    public function __construct(
+        LoggerInterface $logger,
+        array $content
+    )
     {
+        $this->logger = $logger;
+        $logger->notice('Content: ', $content);
         $this->content = $content;
-        $this->data = $content['callback_query'] ?? $content['message'];
+        $this->data = $content['callback_query'] ?? $content['message'] ?? $content['my_chat_member'] ?? [];
     }
 
     public function getContent(): array
@@ -57,22 +37,22 @@ class TelegramEventMessage implements TelegramEventMessageInterface
 
     public function getChatId(): int
     {
-        return $this->data['chat']['id'];
+        return $this->data['chat']['id'] ?? 0;
     }
 
     public function getMessageId(): int
     {
-        return $this->data['message_id'];
+        return $this->data['message_id'] ?? 0;
     }
 
     public function getUpdateId(): int
     {
-        return $this->content['update_id'];
+        return $this->content['update_id'] ?? 0;
     }
 
     public function getText(): string
     {
-        return $this->data['text'] ?? $this->data['data'];
+        return $this->data['text'] ?? $this->data['data'] ?? '';
     }
 
     public function isQuery(): bool
@@ -82,11 +62,17 @@ class TelegramEventMessage implements TelegramEventMessageInterface
 
     public function send(MessageBusInterface $bus): void
     {
+        $chatId = $this->getChatId();
+        if ($chatId === 0) {
+            $this->logger->warning('Cannot send message: chat ID is missing');
+            return;
+        }
         $bus->dispatch($this);
     }
 
-    public function newResponseMessage(string $text): TelegramResponseInterface
+    public function newResponse(string $text): TelegramResponseInterface
     {
-        return new TelegramResponse($this->getChatId());
+        $response = new TelegramResponse($this->getChatId());
+        return $response->withMessage($text);
     }
 }

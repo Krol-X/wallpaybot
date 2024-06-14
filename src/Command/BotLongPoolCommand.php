@@ -24,8 +24,8 @@ class BotLongPoolCommand extends Command
 
     public function __construct(
         private readonly TelegramServiceInterface $telegram,
-        private readonly TelegramParseServiceInterface $parser,
-        private readonly MessageBusInterface $bus
+        private readonly MessageBusInterface      $bus,
+        private readonly LoggerInterface          $logger
     )
     {
         parent::__construct();
@@ -49,12 +49,15 @@ class BotLongPoolCommand extends Command
     {
         $output->writeln('Starting telegram long-pool loop...');
         $loop = Loop::get();
-        $loop->addPeriodicTimer(1, function (TimerInterface $timer) use ($output) {
-            $raw_data = $this->telegram->getUpdates();
-            $events = $this->parser->parseData($raw_data);
+        $loop->addPeriodicTimer(1, function (TimerInterface $timer) {
+            try {
+                $events = $this->telegram->getUpdates();
 
-            foreach ($events as $event) {
-                $event->send($this->bus);
+                foreach ($events as $event) {
+                    $event->send($this->bus);
+                }
+            } catch (\Throwable $e) {
+                $this->logger->critical(sprintf('Error in long-pooling: %s', $e->getMessage()), ['exception' => $e]);
             }
         });
         $loop->run();

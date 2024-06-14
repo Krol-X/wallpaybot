@@ -10,5 +10,5 @@ interface TelegramParseServiceInterface
      * @param array $data
      * @return TelegramEventMessageInterface[]
      */
-    public function parseData(array $data): array;
+    public function parseUpdatesData(array $data): array;
 }

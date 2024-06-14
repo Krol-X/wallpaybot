@@ -23,5 +23,5 @@ interface TelegramEventMessageInterface
 
     public function send(MessageBusInterface $bus): void;
 
-    public function newResponseMessage(string $text): TelegramResponseInterface;
+    public function newResponse(string $text): TelegramResponseInterface;
 }

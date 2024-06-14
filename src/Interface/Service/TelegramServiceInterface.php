@@ -12,5 +12,5 @@ interface TelegramServiceInterface
 
     public function sendMessage(TelegramResponseInterface $data): array;
 
-    public function callTelegram(string $method, ?TelegramResponseInterface $data = null): array;
+    public function callTelegram(string $method, ?array $data = null): array;
 }

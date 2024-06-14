@@ -21,8 +21,8 @@ class BotWebhookController extends AbstractController
     #[Route('/api/v1/telegram/webhook', name: 'app_bot_webhook')]
     public function index(Request $request): Response
     {
-        $raw_data = json_decode($request->getContent(), true);
-        $events = $this->parser->parseData($raw_data);
+        $updates_data = json_decode($request->getContent(), true);
+        $events = $this->parser->parseUpdatesData($updates_data);
         foreach ($events as $event) {
             $event->send($this->bus);
         }
