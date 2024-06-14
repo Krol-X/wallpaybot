@@ -44,7 +44,7 @@ class BotEventHandler extends TelegramEventHandler
     {
         $keyboard = (new InlineKeyboard())
             ->addButton("Платеж {100} руб.", '1')
-            ->addButton("Отменить", 'cancel-payment');
+            ->addButton("Отменить", 'cancel-payment-1');
 
         $this->telegram->SendMessage(
             $message->newResponse(self::PAYMENT_CREATED)
@@ -53,12 +53,13 @@ class BotEventHandler extends TelegramEventHandler
         return true;
     }
 
-    #[OnTelegramQuery(command: 'cancel-payment')]
+    #[OnTelegramQuery(pattern: "/^cancel-payment-\d+$/")]
     public function CancelPayment(TelegramEventMessageInterface $message): bool
     {
         // $this->botService->cancelPayment($data);
         $this->telegram->SendMessage(
             $message->newResponse(self::RESPONSE_CANCELED)
         );
+        return true;
     }
 }

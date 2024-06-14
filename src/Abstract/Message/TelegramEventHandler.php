@@ -14,13 +14,14 @@ abstract class TelegramEventHandler implements TelegramEventHandlerInterface
     public function __invoke(TelegramEventMessageInterface $message)
     {
         $text = $message->getText();
+        $isQuery = $message->isQuery();
 
         $reflection = new ReflectionClass($this);
         foreach ($reflection->getMethods() as $method) {
             foreach ($method->getAttributes() as $attribute) {
                 $attrInstance = $attribute->newInstance();
 
-                if ($message->isQuery()) {
+                if ($isQuery) {
                     if ($this->checkAttribute($attrInstance, OnTelegramQuery::class, $text)) {
                         if ($this->{$method->getName()}($message))
                             return;

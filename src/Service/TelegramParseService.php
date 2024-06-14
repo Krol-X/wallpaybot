@@ -25,7 +25,9 @@ class TelegramParseService implements TelegramParseServiceInterface
         if (isset($data['ok']) && $data['ok']) {
             $data = $data['result'];
         }
-        $this->logger->notice('> ', $data);
+
+        if (count($data) == 0)
+            return $data;
 
         return array_map(function ($it) {
             try {

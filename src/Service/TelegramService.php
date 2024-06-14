@@ -33,7 +33,6 @@ class TelegramService implements TelegramServiceInterface
         $updates_data = $this->callTelegram('getUpdates',
             ['offset' => $this->nextId, 'limit' => $limit, 'timeout' => 0]
         );
-        $this->logger->notice('Test');
         $events = $this->parser->parseUpdatesData($updates_data);
         $this->logger->notice('Events: ', $events);
 

@@ -58,7 +58,7 @@ class TelegramEventMessage implements TelegramEventMessageInterface
 
     public function isQuery(): bool
     {
-        return isset($content['callback_query']);
+        return isset($this->content['callback_query']);
     }
 
     public function send(MessageBusInterface $bus, ?int $delay = null): void

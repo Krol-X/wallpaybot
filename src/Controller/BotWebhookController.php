@@ -26,5 +26,6 @@ class BotWebhookController extends AbstractController
         foreach ($events as $event) {
             $event->send($this->bus);
         }
+        return $this->json(['ok' => true]);
     }
 }
