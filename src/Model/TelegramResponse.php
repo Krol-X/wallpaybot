@@ -3,7 +3,6 @@
 namespace App\Model;
 
 use App\Interface\Model\TelegramResponseInterface;
-use Psr\Log\LoggerInterface;
 
 class TelegramResponse implements TelegramResponseInterface
 {
@@ -33,21 +32,13 @@ class TelegramResponse implements TelegramResponseInterface
         return $this;
     }
 
-    public function withKeyboard(array $keyboard): self
+    public function withReplyMarkup($data): self
     {
-        $this->data['reply_markup'] = json_encode([
-            'keyboard' => $keyboard,
-            'resize_keyboard' => true,
-            'one_time_keyboard' => true
-        ]);
-        return $this;
-    }
-
-    public function withInlineKeyboard(array $keyboard): self
-    {
-        $this->data['reply_markup'] = json_encode([
-            'inline_keyboard' => $keyboard
-        ]);
+        if ($data) {
+            $this->data['reply_markup'] = $data->toArray();
+        } else {
+            unset($this->data['reply_markup']);
+        }
         return $this;
     }
 

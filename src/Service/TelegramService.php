@@ -54,6 +54,7 @@ class TelegramService implements TelegramServiceInterface
     {
         $url = "https://api.telegram.org/bot{$this->telegramBotToken}/$method";
 
+        $this->logger->notice('Calling Telegram: ' . $method, $data);
         $response = $this->httpClient->request('POST', $url, [
             'json' => $data
         ]);
@@ -64,7 +65,6 @@ class TelegramService implements TelegramServiceInterface
                 throw new TelegramApiException($response_data['description']);
             }
         }
-        $this->logger->notice('Calling Telegram: ' . $method, $data);
         $this->logger->notice('Response: ', $response_data);
         return $response_data;
     }

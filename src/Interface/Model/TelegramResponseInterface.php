@@ -8,11 +8,7 @@ interface TelegramResponseInterface
 
     public function withData(array $data): self;
 
-    public function withMessage(string $message): self;
-
-    public function withKeyboard(array $keyboard): self;
-
-    public function withInlineKeyboard(array $keyboard): self;
+    public function withReplyMarkup($data): self;
 
     public function toArray(): array;
 }
