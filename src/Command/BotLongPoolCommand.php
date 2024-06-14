@@ -2,7 +2,9 @@
 
 namespace App\Command;
 
-use App\Service\AppBotServiceInterface;
+use App\Interface\Service\TelegramParseServiceInterface;
+use App\Interface\Service\TelegramServiceInterface;
+use Psr\Log\LoggerInterface;
 use React\EventLoop\Loop;
 use React\EventLoop\TimerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -10,6 +12,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 #[AsCommand(
     name: 'bot:long-pool',
@@ -20,7 +23,9 @@ class BotLongPoolCommand extends Command
     private int $offset = 0;
 
     public function __construct(
-        private readonly AppBotServiceInterface $appBotService
+        private readonly TelegramServiceInterface $telegram,
+        private readonly TelegramParseServiceInterface $parser,
+        private readonly MessageBusInterface $bus
     )
     {
         parent::__construct();
@@ -36,7 +41,7 @@ class BotLongPoolCommand extends Command
     {
         $token = $input->getArgument('token');
         if ($token) {
-            $this->appBotService->setToken($token);
+            $this->telegram->setToken($token);
         }
     }
 
@@ -45,8 +50,12 @@ class BotLongPoolCommand extends Command
         $output->writeln('Starting telegram long-pool loop...');
         $loop = Loop::get();
         $loop->addPeriodicTimer(1, function (TimerInterface $timer) use ($output) {
-            $updates_data = $this->appBotService->getUpdates();
-            $this->appBotService->handleResponseData($updates_data);
+            $raw_data = $this->telegram->getUpdates();
+            $events = $this->parser->parseData($raw_data);
+
+            foreach ($events as $event) {
+                $event->send($this->bus);
+            }
         });
         $loop->run();
         return Command::SUCCESS;
