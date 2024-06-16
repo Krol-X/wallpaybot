@@ -36,6 +36,11 @@ class TelegramEventMessage implements TelegramEventMessageInterface
         return $this->data;
     }
 
+    public function getFromData(): array
+    {
+        return $this->data['from'] ?? [];
+    }
+
     public function getFromId(): int
     {
         return $this->data['from']['id'] ?? 0;

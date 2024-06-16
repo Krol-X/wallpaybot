@@ -9,6 +9,7 @@ use App\Interface\Message\TelegramEventMessageInterface;
 use App\Interface\Service\TelegramServiceInterface;
 use App\Model\Keyboard\InlineKeyboard;
 use App\Model\Keyboard\ReplyKeyboard;
+use App\Service\AppService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -21,7 +22,8 @@ class BotEventHandler extends TelegramEventHandler
     const PAYMENT_COUNT = 'У Вас %d платежей:';
 
     public function __construct(
-        private readonly TelegramServiceInterface $telegram
+        private readonly TelegramServiceInterface $telegram,
+        private readonly AppService               $appService
     )
     {
     }
@@ -29,6 +31,8 @@ class BotEventHandler extends TelegramEventHandler
     #[OnTelegramMessage(command: '/start')]
     public function start(TelegramEventMessageInterface $message): bool
     {
+        $this->appService->updateUser($message->getFromId(), $message->getFromData());
+
         $keyboard = (new ReplyKeyboard())
             ->addButton(self::CREATE_PAYMENT)
             ->addButton(self::PAYMENTS_LIST);

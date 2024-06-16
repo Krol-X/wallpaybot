@@ -11,6 +11,8 @@ interface TelegramEventMessageInterface
 
     public function getData(): array;
 
+    public function getFromData(): array;
+
     public function getFromId(): int;
 
     public function getMessageId(): int;
