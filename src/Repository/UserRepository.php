@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -12,7 +13,8 @@ use Doctrine\Persistence\ManagerRegistry;
 class UserRepository extends ServiceEntityRepository
 {
     public function __construct(
-        ManagerRegistry $registry
+        ManagerRegistry $registry,
+        private readonly EntityManagerInterface $em
     )
     {
         parent::__construct($registry, User::class);
@@ -33,7 +35,7 @@ class UserRepository extends ServiceEntityRepository
         }
 
         $user = new User();
-        $user->setTelegramId($data['id'])
+        $user->setId($data['id'])
             ->setFirstName($data['first_name'])
             ->setLastName($data['last_name'])
             ->setUsername($data['username'])

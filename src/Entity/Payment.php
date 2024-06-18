@@ -24,11 +24,10 @@ class Payment
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $paid_at = null;
 
     #[ORM\ManyToOne(inversedBy: 'payments')]
-    #[ORM\JoinColumn(referencedColumnName: 'telegram_id')]
     private ?User $user = null;
 
     public function getId(): ?int
@@ -77,7 +76,7 @@ class Payment
         return $this->paid_at;
     }
 
-    public function setPaidAt(\DateTimeImmutable $paid_at): self
+    public function setPaidAt(?\DateTimeImmutable $paid_at): self
     {
         $this->paid_at = $paid_at;
 

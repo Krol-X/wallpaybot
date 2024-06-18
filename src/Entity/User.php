@@ -8,18 +8,15 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-// use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ApiResource]
 class User
 {
-    // use TimestampableEntity;
-
     #[ORM\Id]
     #[ORM\Column]
-    private ?int $telegram_id = null;
+    private ?int $id = null;
 
     #[ORM\Column(length: 64)]
     private ?string $first_name = null;
@@ -39,7 +36,7 @@ class User
     /**
      * @var Collection<int, Payment>
      */
-    #[ORM\OneToMany(targetEntity: Payment::class, mappedBy: 'user_id')]
+    #[ORM\OneToMany(targetEntity: Payment::class, mappedBy: 'user')]
     private Collection $payments;
 
     public function __construct()
@@ -47,14 +44,14 @@ class User
         $this->payments = new ArrayCollection();
     }
 
-    public function getTelegramId(): ?int
+    public function getId(): ?int
     {
-        return $this->telegram_id;
+        return $this->id;
     }
 
-    public function setTelegramId(int $telegram_id): self
+    public function setId(int $id): self
     {
-        $this->telegram_id = $telegram_id;
+        $this->id = $id;
 
         return $this;
     }

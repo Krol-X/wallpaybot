@@ -19,7 +19,7 @@ class BotEventHandler extends TelegramEventHandler
     private const PAYMENTS_LIST = 'Платежи';
     private const PAYMENT_CREATED = 'Платеж создан';
     private const RESPONSE_CANCELED = 'Платеж отменён';
-    const PAYMENT_COUNT = 'У Вас %d платежей:';
+    private const PAYMENT_COUNT = 'У Вас %d платежей:';
 
     public function __construct(
         private readonly TelegramServiceInterface $telegram,
@@ -51,7 +51,7 @@ class BotEventHandler extends TelegramEventHandler
 
         $keyboard = (new InlineKeyboard())
             ->addButton("Платеж {$payment->getAmount()} руб.", '1')
-            ->addButton("Отменить", "cancel-payment 1");
+            ->addButton("Отменить", "cancel-payment {$payment->getId()}");
 
         $this->telegram->SendMessage(
             $message->newResponse(self::PAYMENT_CREATED)
@@ -96,13 +96,13 @@ class BotEventHandler extends TelegramEventHandler
         $payment = $paymentEntity->toArray();
 
         $responseMessage = "Платёж {$payment['id']}\n" .
-            "Статус: {$payment['status']}\n";
+            "Статус: {$payment['status']}\n" .
             "Цена: {$payment['amount']} руб.\n" .
 //            "С учётом скидки: " . ($payment['is_discount'] ? 'Да' : 'Нет') . "\n" .
-            "Дата создания: " . $payment['created_at']->format('Y-m-d H:i:s') . "\n";
+            "Дата создания: " . $payment['created_at'] . "\n";
 
         if ($payment['paid_at']) {
-            $responseMessage .= "Дата оплаты: " . $payment['paid_at']->format('Y-m-d H:i:s') . "\n";
+            $responseMessage .= "Дата оплаты: " . $payment['paid_at'] . "\n";
         }
 
         $this->telegram->SendMessage(

@@ -14,7 +14,8 @@ use Doctrine\Persistence\ManagerRegistry;
 class PaymentRepository extends ServiceEntityRepository
 {
     public function __construct(
-        ManagerRegistry $registry
+        ManagerRegistry $registry,
+        private readonly EntityManagerInterface $em
     )
     {
         parent::__construct($registry, Payment::class);
@@ -24,7 +25,9 @@ class PaymentRepository extends ServiceEntityRepository
     {
         $payment = (new Payment())
             ->setAmount(100)
-            ->setStatus('created');
+            ->setStatus('created')
+            ->setCreatedAt(new \DateTimeImmutable())
+            ->setPaidAt(null);
         $user->addPayment($payment);
 
         $this->em->persist($payment);

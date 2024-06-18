@@ -32,11 +32,7 @@ class AppService
 
     public function createPayment(TelegramEventMessageInterface $message): Payment
     {
-        $user = $this->userRepository->find($message->getFromId());
-        if (!$user) {
-            // todo: exception
-        }
-
+        $user = $this->findOrCreateUser($message);
         $payment = $this->paymentRepository->createPayment($user);
         return $payment;
     }
@@ -49,7 +45,7 @@ class AppService
     public function cancelPayment(TelegramEventMessageInterface $message): void
     {
         $command = $message->getText();
-        $payment_id = explode(' ', $command[1]);
+        $payment_id = explode(' ', $command)[1];
 
         $payment = $this->paymentRepository->find($payment_id);
         $this->paymentRepository->cancelPayment($payment);
@@ -60,11 +56,7 @@ class AppService
      */
     public function getPaymentList(TelegramEventMessageInterface $message): Collection
     {
-        $user = $this->userRepository->find($message->getFromId());
-        if (!$user) {
-            // todo: exception
-        }
-
+        $user = $this->findOrCreateUser($message);
         $payments = $user->getPayments();
         return $payments;
     }
