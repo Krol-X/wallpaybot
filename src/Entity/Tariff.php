@@ -22,6 +22,9 @@ class Tariff
     #[ORM\Column]
     private ?float $price = null;
 
+    #[ORM\Column]
+    private ?int $discount_percentage = null;
+
     /**
      * @var Collection<int, Payment>
      */
@@ -45,9 +48,9 @@ class Tariff
         return $this;
     }
 
-    public function getPrice(): ?float
+    public function getPrice(bool $withDiscount = false): ?float
     {
-        return $this->price;
+        return $withDiscount ? $this->price * ($this->discount_percentage * 0.01) : $this->price;
     }
 
     public function setPrice(float $price): static
@@ -55,5 +58,20 @@ class Tariff
         $this->price = $price;
 
         return $this;
+    }
+
+    public function getDiscountPercentage(): ?int
+    {
+        return $this->discount_percentage;
+    }
+
+    public function setDiscountPercentage(?int $discount_percentage): void
+    {
+        $this->discount_percentage = $discount_percentage;
+    }
+
+    public function getPayments(): Collection
+    {
+        return $this->payments;
     }
 }

@@ -22,10 +22,11 @@ class PaymentRepository extends ServiceEntityRepository
         parent::__construct($registry, Payment::class);
     }
 
-    public function createPayment(User $user, Tariff $tariff): Payment
+    public function createPayment(User $user, Tariff $tariff, bool $withDiscount = false): Payment
     {
         $payment = (new Payment())
-            ->setAmount(100)
+            ->setAmount($tariff->getPrice($withDiscount))
+            ->setIsDiscount($withDiscount)
             ->setStatus('created')
             ->setTariff($tariff)
             ->setCreatedAt(new \DateTimeImmutable())

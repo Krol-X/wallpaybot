@@ -18,6 +18,9 @@ class Payment
     #[ORM\Column]
     private ?float $amount = null;
 
+    #[ORM\Column]
+    private ?bool $is_discount = false;
+
     #[ORM\Column(length: 20)]
     private ?string $status = null;
 
@@ -46,6 +49,18 @@ class Payment
     public function setAmount(float $amount): self
     {
         $this->amount = $amount;
+
+        return $this;
+    }
+
+    public function isDiscount(): ?bool
+    {
+        return $this->is_discount;
+    }
+
+    public function setIsDiscount(?bool $is_discount): self
+    {
+        $this->is_discount = $is_discount;
 
         return $this;
     }
@@ -118,7 +133,8 @@ class Payment
             'status' => $this->getStatus(),
             'created_at' => $this->getCreatedAt()?->format('Y-m-d H:i:s'),
             'paid_at' => $this->getPaidAt()?->format('Y-m-d H:i:s'),
-            'tariff' => $this->tariff?->getName()
+            'tariff' => $this->tariff?->getName(),
+            'is_discount' => $this->isDiscount()
         ];
     }
 }

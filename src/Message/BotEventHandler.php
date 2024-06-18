@@ -108,12 +108,14 @@ class BotEventHandler extends TelegramEventHandler
         $paymentEntity = $this->appService->getPayment($message);
         $payment = $paymentEntity->toFormattedArray();
 
-        $responseMessage = "Платёж {$payment['id']}\n" .
-            "Статус: {$payment['status']}\n" .
-            "Цена: {$payment['amount']} руб.\n" .
-            "Тариф: {$payment['tariff']}\n" .
-//            "С учётом скидки: " . ($payment['is_discount'] ? 'Да' : 'Нет') . "\n" .
-            "Дата создания: {$payment['created_at']}\n";
+        $responseMessage = "Платёж {$payment['id']}";
+        if ($payment['is_discount']) {
+            $responseMessage .= ' (со скидкой)';
+        }
+        $responseMessage .= "\nСтатус: {$payment['status']}\n";
+        $responseMessage .= "Цена: {$payment['amount']} руб.\n";
+        $responseMessage .= "Тариф: {$payment['tariff']}\n";
+        $responseMessage .= "Дата создания: {$payment['created_at']}\n";
 
         if ($payment['paid_at']) {
             $responseMessage .= "Дата оплаты: {$payment['paid_at']}\n";
