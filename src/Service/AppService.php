@@ -6,6 +6,7 @@ use App\Entity\Payment;
 use App\Entity\User;
 use App\Interface\Message\TelegramEventMessageInterface;
 use App\Repository\PaymentRepository;
+use App\Repository\TariffRepository;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\Collection;
 
@@ -13,7 +14,8 @@ class AppService
 {
     public function __construct(
         private readonly UserRepository    $userRepository,
-        private readonly PaymentRepository $paymentRepository
+        private readonly PaymentRepository $paymentRepository,
+        private readonly TariffRepository $tariffRepository
     )
     {
     }
@@ -33,7 +35,8 @@ class AppService
     public function createPayment(TelegramEventMessageInterface $message): Payment
     {
         $user = $this->findOrCreateUser($message);
-        $payment = $this->paymentRepository->createPayment($user);
+        $tariff = $this->tariffRepository->findFirstTariff();
+        $payment = $this->paymentRepository->createPayment($user, $tariff);
         return $payment;
     }
 

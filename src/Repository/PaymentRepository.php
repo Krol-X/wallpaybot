@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Payment;
+use App\Entity\Tariff;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,11 +22,12 @@ class PaymentRepository extends ServiceEntityRepository
         parent::__construct($registry, Payment::class);
     }
 
-    public function createPayment(User $user): Payment
+    public function createPayment(User $user, Tariff $tariff): Payment
     {
         $payment = (new Payment())
             ->setAmount(100)
             ->setStatus('created')
+            ->setTariff($tariff)
             ->setCreatedAt(new \DateTimeImmutable())
             ->setPaidAt(null);
         $user->addPayment($payment);

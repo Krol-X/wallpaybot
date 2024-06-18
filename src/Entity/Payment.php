@@ -30,6 +30,9 @@ class Payment
     #[ORM\ManyToOne(inversedBy: 'payments')]
     private ?User $user = null;
 
+    #[ORM\ManyToOne(inversedBy: 'tariffs')]
+    private ?Tariff $tariff = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -95,14 +98,27 @@ class Payment
         return $this;
     }
 
-    public function toArray(): array
+    public function getTariff(): ?Tariff
+    {
+        return $this->tariff;
+    }
+
+    public function setTariff(?Tariff $tariff): self
+    {
+        $this->tariff = $tariff;
+
+        return $this;
+    }
+
+    public function toFormattedArray(): array
     {
         return [
             'id' => $this->getId(),
             'amount' => $this->getAmount(),
             'status' => $this->getStatus(),
             'created_at' => $this->getCreatedAt()?->format('Y-m-d H:i:s'),
-            'paid_at' => $this->getPaidAt()?->format('Y-m-d H:i:s')
+            'paid_at' => $this->getPaidAt()?->format('Y-m-d H:i:s'),
+            'tariff' => $this->tariff?->getName()
         ];
     }
 }
