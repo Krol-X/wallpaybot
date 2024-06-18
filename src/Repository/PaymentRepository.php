@@ -15,7 +15,7 @@ use Doctrine\Persistence\ManagerRegistry;
 class PaymentRepository extends ServiceEntityRepository
 {
     public function __construct(
-        ManagerRegistry $registry,
+        ManagerRegistry                         $registry,
         private readonly EntityManagerInterface $em
     )
     {
@@ -39,9 +39,6 @@ class PaymentRepository extends ServiceEntityRepository
         return $payment;
     }
 
-    /**
-     * Установка успешного статуса платежа.
-     */
     public function markAsPaid(Payment $payment): void
     {
         $payment->setStatus('paid')
@@ -49,9 +46,6 @@ class PaymentRepository extends ServiceEntityRepository
         $this->em->flush();
     }
 
-    /**
-     * Отмена платежа.
-     */
     public function cancelPayment(Payment $payment): void
     {
         $payment->setStatus('canceled');

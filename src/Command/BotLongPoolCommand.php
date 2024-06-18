@@ -2,7 +2,6 @@
 
 namespace App\Command;
 
-use App\Interface\Service\TelegramParseServiceInterface;
 use App\Interface\Service\TelegramServiceInterface;
 use Psr\Log\LoggerInterface;
 use React\EventLoop\Loop;

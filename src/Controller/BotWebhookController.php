@@ -13,7 +13,7 @@ class BotWebhookController extends AbstractController
 {
     public function __construct(
         private readonly TelegramParseServiceInterface $parser,
-        private readonly MessageBusInterface $bus
+        private readonly MessageBusInterface           $bus
     )
     {
     }

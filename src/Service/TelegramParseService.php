@@ -15,7 +15,6 @@ class TelegramParseService implements TelegramParseServiceInterface
     {
     }
 
-
     /**
      * @param array $data
      * @return TelegramEventMessageInterface[]

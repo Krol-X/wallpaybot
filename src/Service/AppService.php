@@ -15,7 +15,7 @@ class AppService
     public function __construct(
         private readonly UserRepository    $userRepository,
         private readonly PaymentRepository $paymentRepository,
-        private readonly TariffRepository $tariffRepository
+        private readonly TariffRepository  $tariffRepository
     )
     {
     }
