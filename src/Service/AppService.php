@@ -42,6 +42,15 @@ class AppService
         $this->paymentRepository->markAsPaid($payment);
     }
 
+    public function applyPayment(TelegramEventMessageInterface $message): void
+    {
+        $command = $message->getText();
+        $payment_id = explode(' ', $command)[1];
+
+        $payment = $this->paymentRepository->find($payment_id);
+        $this->paymentRepository->markAsPaid($payment);
+    }
+
     public function cancelPayment(TelegramEventMessageInterface $message): void
     {
         $command = $message->getText();

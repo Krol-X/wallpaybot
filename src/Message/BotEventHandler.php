@@ -18,6 +18,7 @@ class BotEventHandler extends TelegramEventHandler
     private const CREATE_PAYMENT = 'Создать платеж';
     private const PAYMENTS_LIST = 'Платежи';
     private const PAYMENT_CREATED = 'Платеж создан';
+    private const RESPONSE_PAID = 'Платеж оплачен';
     private const RESPONSE_CANCELED = 'Платеж отменён';
     private const PAYMENT_COUNT = 'У Вас %d платежей:';
 
@@ -48,14 +49,26 @@ class BotEventHandler extends TelegramEventHandler
     public function CreatePayment(TelegramEventMessageInterface $message): bool
     {
         $payment = $this->appService->createPayment($message);
+        $payment_id = $payment->getId();
 
         $keyboard = (new InlineKeyboard())
-            ->addButton("Платеж {$payment->getAmount()} руб.", '1')
-            ->addButton("Отменить", "cancel-payment {$payment->getId()}");
+            ->addButton("Платеж {$payment->getAmount()} руб.", "apply-payment {$payment_id}")
+            ->addButton("Отменить", "cancel-payment {$payment_id}");
 
         $this->telegram->SendMessage(
             $message->newResponse(self::PAYMENT_CREATED)
                 ->withReplyMarkup($keyboard)
+        );
+        return true;
+    }
+
+    #[OnTelegramQuery(pattern: "/^apply-payment \d+$/")]
+    public function ApplyPayment(TelegramEventMessageInterface $message): bool
+    {
+        $this->appService->applyPayment($message);
+
+        $this->telegram->SendMessage(
+            $message->newResponse(self::RESPONSE_PAID)
         );
         return true;
     }
