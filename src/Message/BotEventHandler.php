@@ -31,7 +31,7 @@ class BotEventHandler extends TelegramEventHandler
     #[OnTelegramMessage(command: '/start')]
     public function start(TelegramEventMessageInterface $message): bool
     {
-        $this->appService->updateUser($message->getFromId(), $message->getFromData());
+        $this->appService->findOrCreateUser($message);
 
         $keyboard = (new ReplyKeyboard())
             ->addButton(self::CREATE_PAYMENT)
@@ -47,8 +47,10 @@ class BotEventHandler extends TelegramEventHandler
     #[OnTelegramMessage(command: self::CREATE_PAYMENT)]
     public function CreatePayment(TelegramEventMessageInterface $message): bool
     {
+        $payment = $this->appService->createPayment($message);
+
         $keyboard = (new InlineKeyboard())
-            ->addButton("Платеж {100} руб.", '1')
+            ->addButton("Платеж {$payment->getAmount()} руб.", '1')
             ->addButton("Отменить", "cancel-payment 1");
 
         $this->telegram->SendMessage(
@@ -61,7 +63,8 @@ class BotEventHandler extends TelegramEventHandler
     #[OnTelegramQuery(pattern: "/^cancel-payment \d+$/")]
     public function CancelPayment(TelegramEventMessageInterface $message): bool
     {
-        // $this->botService->cancelPayment($data);
+        $this->appService->cancelPayment($message);
+
         $this->telegram->SendMessage(
             $message->newResponse(self::RESPONSE_CANCELED)
         );
@@ -71,11 +74,11 @@ class BotEventHandler extends TelegramEventHandler
     #[OnTelegramMessage(command: self::PAYMENTS_LIST)]
     public function PaymentsList(TelegramEventMessageInterface $message): bool
     {
-        $payments = [1, 2, 3, 4];
+        $payments = $this->appService->getPaymentList($message);
 
         $keyboard = new InlineKeyboard();
         foreach ($payments as $payment) {
-            $id = $payment;
+            $id = $payment->getId();
             $keyboard->addButton("Платеж $id", "payment-info $id");
         }
 
@@ -89,26 +92,21 @@ class BotEventHandler extends TelegramEventHandler
     #[OnTelegramQuery(pattern: "/^payment-info \d+$/")]
     public function PaymentInfo(TelegramEventMessageInterface $message): bool
     {
-        $command = $message->getText();
-        $payment_id = explode(' ', $command)[1];
-        $payment = [
-            "id" => $payment_id,
-            "status" => "test"
-        ];
+        $paymentEntity = $this->appService->getPayment($message);
+        $payment = $paymentEntity->toArray();
 
-        $response_message = "Платёж {$payment_id}\n" .
-            "Статус: test\n";
-//            "Цена: {$payment->getPrice()} руб.\n" .
-//            "С учётом скидки: " . ($payment->isDiscount() ? 'Да' : 'Нет') . "\n" .
-//            "Дата создания: " . $payment->getCreatedAt()->format('Y-m-d H:i:s') . "\n";
+        $responseMessage = "Платёж {$payment['id']}\n" .
+            "Статус: {$payment['status']}\n";
+            "Цена: {$payment['amount']} руб.\n" .
+//            "С учётом скидки: " . ($payment['is_discount'] ? 'Да' : 'Нет') . "\n" .
+            "Дата создания: " . $payment['created_at']->format('Y-m-d H:i:s') . "\n";
 
-//        $paidAt = $payment->getPaidAt();
-//        if ($paidAt) {
-//            $message .= "Дата оплаты: " . $paidAt->format('Y-m-d H:i:s') . "\n";
-//        }
+        if ($payment['paid_at']) {
+            $responseMessage .= "Дата оплаты: " . $payment['paid_at']->format('Y-m-d H:i:s') . "\n";
+        }
 
         $this->telegram->SendMessage(
-            $message->newResponse($response_message)
+            $message->newResponse($responseMessage)
         );
         return true;
     }

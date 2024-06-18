@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 // use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -15,9 +17,8 @@ class User
 {
     // use TimestampableEntity;
 
-    // string for 32-bit if it needs
     #[ORM\Id]
-    #[ORM\Column(type: Types::BIGINT)]
+    #[ORM\Column]
     private ?int $telegram_id = null;
 
     #[ORM\Column(length: 64)]
@@ -35,12 +36,23 @@ class User
     #[ORM\Column(type: Types::BLOB, nullable: true)]
     private ?string $profile_image = null;
 
+    /**
+     * @var Collection<int, Payment>
+     */
+    #[ORM\OneToMany(targetEntity: Payment::class, mappedBy: 'user_id')]
+    private Collection $payments;
+
+    public function __construct()
+    {
+        $this->payments = new ArrayCollection();
+    }
+
     public function getTelegramId(): ?int
     {
         return $this->telegram_id;
     }
 
-    public function setTelegramId(int $telegram_id): static
+    public function setTelegramId(int $telegram_id): self
     {
         $this->telegram_id = $telegram_id;
 
@@ -52,7 +64,7 @@ class User
         return $this->first_name;
     }
 
-    public function setFirstName(string $first_name): static
+    public function setFirstName(string $first_name): self
     {
         $this->first_name = $first_name;
 
@@ -64,7 +76,7 @@ class User
         return $this->last_name;
     }
 
-    public function setLastName(string $last_name): static
+    public function setLastName(string $last_name): self
     {
         $this->last_name = $last_name;
 
@@ -76,7 +88,7 @@ class User
         return $this->username;
     }
 
-    public function setUsername(string $username): static
+    public function setUsername(string $username): self
     {
         $this->username = $username;
 
@@ -88,7 +100,7 @@ class User
         return $this->language_code;
     }
 
-    public function setLanguageCode(string $language_code): static
+    public function setLanguageCode(string $language_code): self
     {
         $this->language_code = $language_code;
 
@@ -100,9 +112,39 @@ class User
         return $this->profile_image;
     }
 
-    public function setProfileImage(?string $profile_image): static
+    public function setProfileImage(?string $profile_image): self
     {
         $this->profile_image = $profile_image;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Payment>
+     */
+    public function getPayments(): Collection
+    {
+        return $this->payments;
+    }
+
+    public function addPayment(Payment $payment): self
+    {
+        if (!$this->payments->contains($payment)) {
+            $this->payments->add($payment);
+            $payment->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePayment(Payment $payment): self
+    {
+        if ($this->payments->removeElement($payment)) {
+            // set the owning side to null (unless already changed)
+            if ($payment->getUser() === $this) {
+                $payment->setUser(null);
+            }
+        }
 
         return $this;
     }
