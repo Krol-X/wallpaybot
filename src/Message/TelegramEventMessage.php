@@ -6,12 +6,12 @@ use App\Interface\Message\TelegramEventMessageInterface;
 use App\Interface\Model\TelegramResponseInterface;
 use App\Model\TelegramResponse;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Messenger\Stamp\DelayStamp;
 
 class TelegramEventMessage implements TelegramEventMessageInterface
 {
     private array $content;
     private array $data;
+    private ?int $delay = null;
 
     public function __construct(
         array $content
@@ -57,12 +57,26 @@ class TelegramEventMessage implements TelegramEventMessageInterface
         return $this->data['text'] ?? $this->data['data'] ?? '';
     }
 
+    public function setDelay(int $delayInSeconds): self
+    {
+        $this->delay = $delayInSeconds;
+
+        return $this;
+    }
+
+    public function delay(): void
+    {
+        if ($this->delay != null) {
+            sleep($this->delay);
+        }
+    }
+
     public function isQuery(): bool
     {
         return isset($this->content['callback_query']);
     }
 
-    public function send(MessageBusInterface $bus, ?int $delay = null): void
+    public function send(MessageBusInterface $bus): void
     {
         $chatId = $this->getFromId();
         if ($chatId === 0) {
@@ -70,11 +84,7 @@ class TelegramEventMessage implements TelegramEventMessageInterface
             return;
         }
 
-        if ($delay != null) {
-            $bus->dispatch($this)->with(new DelayStamp($delay));
-        } else {
-            $bus->dispatch($this);
-        }
+        $bus->dispatch($this);
     }
 
     public function newResponse(string $text): TelegramResponseInterface

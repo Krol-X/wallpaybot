@@ -21,9 +21,13 @@ interface TelegramEventMessageInterface
 
     public function getText(): string;
 
+    public function setDelay(int $delayInSeconds): self;
+
+    public function delay(): void;
+
     public function isQuery(): bool;
 
-    public function send(MessageBusInterface $bus, ?int $delay): void;
+    public function send(MessageBusInterface $bus): void;
 
     public function newResponse(string $text): TelegramResponseInterface;
 }

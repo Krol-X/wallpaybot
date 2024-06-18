@@ -13,6 +13,7 @@ abstract class TelegramEventHandler implements TelegramEventHandlerInterface
 {
     public function __invoke(TelegramEventMessageInterface $message)
     {
+        $message->delay();
         $text = $message->getText();
         $isQuery = $message->isQuery();
 

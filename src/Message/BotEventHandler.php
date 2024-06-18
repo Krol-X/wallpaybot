@@ -93,7 +93,7 @@ class BotEventHandler extends TelegramEventHandler
             ]
         ]);
 
-        $newMessage->send($this->bus, 10000);
+        $newMessage->setDelay(10)->send($this->bus);
         return true;
     }
 
