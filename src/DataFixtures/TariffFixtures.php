@@ -12,7 +12,8 @@ class TariffFixtures extends Fixture
     {
         $tariff = new Tariff();
         $tariff->setName('Базовый');
-        $tariff->setPrice(9.99);
+        $tariff->setPrice(100);
+        $tariff->setDiscountPercentage(10);
         $manager->persist($tariff);
 
         $manager->flush();

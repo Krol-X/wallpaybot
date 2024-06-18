@@ -32,20 +32,15 @@ class AppService
         return $user;
     }
 
-    public function createPayment(TelegramEventMessageInterface $message): Payment
+    public function createPayment(TelegramEventMessageInterface $message, bool $withDiscount = false): Payment
     {
         $user = $this->findOrCreateUser($message);
         $tariff = $this->tariffRepository->findFirstTariff();
-        $payment = $this->paymentRepository->createPayment($user, $tariff);
+        $payment = $this->paymentRepository->createPayment($user, $tariff, $withDiscount);
         return $payment;
     }
 
-    public function acceptPayment(Payment $payment): void
-    {
-        $this->paymentRepository->markAsPaid($payment);
-    }
-
-    public function applyPayment(TelegramEventMessageInterface $message): void
+    public function acceptPayment(TelegramEventMessageInterface $message): void
     {
         $command = $message->getText();
         $payment_id = explode(' ', $command)[1];

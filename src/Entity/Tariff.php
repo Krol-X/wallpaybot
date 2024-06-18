@@ -50,7 +50,11 @@ class Tariff
 
     public function getPrice(bool $withDiscount = false): ?float
     {
-        return $withDiscount ? $this->price * ($this->discount_percentage * 0.01) : $this->price;
+        if ($withDiscount) {
+            return $this->price - $this->price * ($this->discount_percentage * 0.01);
+        } else {
+            return $this->price;
+        }
     }
 
     public function setPrice(float $price): static
@@ -65,7 +69,7 @@ class Tariff
         return $this->discount_percentage;
     }
 
-    public function setDiscountPercentage(?int $discount_percentage): void
+    public function setDiscountPercentage(int $discount_percentage): void
     {
         $this->discount_percentage = $discount_percentage;
     }

@@ -30,7 +30,7 @@ class TelegramParseService implements TelegramParseServiceInterface
 
         return array_map(function ($it) {
             try {
-                return new TelegramEventMessage($this->logger, $it);
+                return new TelegramEventMessage($it);
             } catch (\Throwable $e) {
                 $this->logger->error(sprintf('Error parsing update: %s', $e->getMessage()));
                 return null;

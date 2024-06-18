@@ -5,7 +5,6 @@ namespace App\Message;
 use App\Interface\Message\TelegramEventMessageInterface;
 use App\Interface\Model\TelegramResponseInterface;
 use App\Model\TelegramResponse;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
 
@@ -13,15 +12,12 @@ class TelegramEventMessage implements TelegramEventMessageInterface
 {
     private array $content;
     private array $data;
-    private LoggerInterface $logger;
 
     public function __construct(
-        LoggerInterface $logger,
-        array           $content
+        array $content
     )
     {
-        $this->logger = $logger;
-        $logger->notice('Content: ', $content);
+        // $logger->notice('Content: ', $content);
         $this->content = $content;
         $this->data = $content['callback_query'] ?? $content['message'] ?? $content['my_chat_member'] ?? [];
     }
@@ -70,11 +66,11 @@ class TelegramEventMessage implements TelegramEventMessageInterface
     {
         $chatId = $this->getFromId();
         if ($chatId === 0) {
-            $this->logger->warning('Cannot send message: chat ID is missing');
+            // $this->logger->warning('Cannot send message: chat ID is missing');
             return;
         }
 
-        if ($delay) {
+        if ($delay != null) {
             $bus->dispatch($this)->with(new DelayStamp($delay));
         } else {
             $bus->dispatch($this);
