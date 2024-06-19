@@ -49,7 +49,17 @@ class PaymentRepository extends ServiceEntityRepository
 
     public function cancelPayment(Payment $payment): void
     {
-        $payment->setStatus('canceled');
+        $payment->setStatus('error');
         $this->em->flush();
+    }
+
+    public function findPaymentsBetween(\DateTimeImmutable $start, \DateTimeImmutable $end): array
+    {
+        return $this->createQueryBuilder('p')
+            ->where('p.created_at BETWEEN :start AND :end')
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->getQuery()
+            ->getResult();
     }
 }
