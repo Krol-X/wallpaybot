@@ -36,8 +36,8 @@ class UserRepository extends ServiceEntityRepository
 
         $user = new User();
         $user->setId($data['id'])
-            ->setFirstName($data['first_name'])
-            ->setLastName($data['last_name'])
+            ->setFirstName($data['first_name'] ?? '')
+            ->setLastName($data['last_name'] ?? '')
             ->setUsername($data['username'])
             ->setLanguageCode($data['language_code']);
 
