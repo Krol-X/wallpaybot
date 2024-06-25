@@ -22,9 +22,11 @@ class BotWebhookController extends AbstractController
     public function index(Request $request): Response
     {
         $updates_data = json_decode($request->getContent(), true);
-        $events = $this->parser->parseUpdatesData($updates_data);
-        foreach ($events as $event) {
-            $event->send($this->bus);
+        if ($updates_data) {
+            $events = $this->parser->parseUpdatesData($updates_data);
+            foreach ($events as $event) {
+                $event->send($this->bus);
+            }
         }
         return $this->json(['ok' => true]);
     }
