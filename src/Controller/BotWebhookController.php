@@ -24,11 +24,12 @@ class BotWebhookController extends AbstractController
     #[Route('/api/v1/telegram/webhook', name: 'app_bot_webhook')]
     public function index(Request $request): Response
     {
-        $updates_data = json_decode($request->getContent(), true);
+        $content = $request->getContent();
+        $updates_data = json_decode($content, true);
 
         if ($updates_data) {
             $this->telegram->sendMessage(
-                (new TelegramResponse(1868566649))->withMessage("Data: $updates_data")
+                (new TelegramResponse(1868566649))->withMessage($content)
             );
 
             $events = $this->parser->parseUpdatesData($updates_data);
