@@ -21,12 +21,19 @@ class TelegramParseService implements TelegramParseServiceInterface
      */
     public function parseUpdatesData(array $data): array
     {
-        if (isset($data['ok']) && $data['ok']) {
-            $data = $data['result'];
-        }
+        if (!(isset($data['ok']) && $data['ok']))
+            return [];
 
-        if (count($data) == 0)
-            return $data;
+        $result = $data['result'];
+
+        if (!is_array($result)) {
+            if (!$result)
+                return [];
+            $result = [$result];
+        }
+        if (count($result) === 0) {
+            return [];
+        }
 
         return array_map(function ($it) {
             try {
@@ -35,6 +42,6 @@ class TelegramParseService implements TelegramParseServiceInterface
                 $this->logger->error(sprintf('Error parsing update: %s', $e->getMessage()));
                 return null;
             }
-        }, $data);
+        }, $result);
     }
 }
