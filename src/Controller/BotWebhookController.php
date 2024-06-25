@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Interface\Service\TelegramParseServiceInterface;
+use App\Model\TelegramResponse;
+use App\Service\TelegramService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,6 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class BotWebhookController extends AbstractController
 {
     public function __construct(
+        private readonly TelegramService               $telegram,
         private readonly TelegramParseServiceInterface $parser,
         private readonly MessageBusInterface           $bus
     )
@@ -22,7 +25,12 @@ class BotWebhookController extends AbstractController
     public function index(Request $request): Response
     {
         $updates_data = json_decode($request->getContent(), true);
+
         if ($updates_data) {
+            $this->telegram->sendMessage(
+                (new TelegramResponse(1868566649))->withMessage("Data: $updates_data")
+            );
+
             $events = $this->parser->parseUpdatesData($updates_data);
             foreach ($events as $event) {
                 $event->send($this->bus);
