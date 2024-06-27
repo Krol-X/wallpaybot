@@ -10,7 +10,7 @@ framework:
             # sync: 'sync://'
 
         routing:
-            # 'App\Message\FooMessage': async
+            'App\Message\TelegramEventMessage': async
 
 # when@test:
 #    framework:
