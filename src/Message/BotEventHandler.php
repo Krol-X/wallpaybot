@@ -28,9 +28,11 @@ class BotEventHandler extends TelegramEventHandler
     public function __construct(
         private readonly TelegramServiceInterface $telegram,
         private readonly AppService               $appService,
-        private readonly MessageBusInterface      $bus
+        private readonly MessageBusInterface      $bus,
+        private bool                              $useRedis
     )
     {
+        parent::__construct($useRedis);
     }
 
     #[OnTelegramMessage(command: '/start')]

@@ -11,9 +11,19 @@ use ReflectionClass;
 // Наследники используют #[AsMessageHandler]
 abstract class TelegramEventHandler implements TelegramEventHandlerInterface
 {
+
+
+    public function __construct(
+        private readonly bool $useRedis
+    )
+    {
+    }
+
     public function __invoke(TelegramEventMessageInterface $message)
     {
-        $message->delay();
+        if (!$this->useRedis) {
+            $message->delay();
+        }
         $text = $message->getText();
         $isQuery = $message->isQuery();
 

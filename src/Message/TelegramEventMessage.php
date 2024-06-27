@@ -6,6 +6,7 @@ use App\Interface\Message\TelegramEventMessageInterface;
 use App\Interface\Model\TelegramResponseInterface;
 use App\Model\TelegramResponse;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\DelayStamp;
 
 class TelegramEventMessage implements TelegramEventMessageInterface
 {
@@ -84,7 +85,7 @@ class TelegramEventMessage implements TelegramEventMessageInterface
             return;
         }
 
-        $bus->dispatch($this);
+        $message = $bus->dispatch($this)->with(new DelayStamp(10000));
     }
 
     public function newResponse(string $text): TelegramResponseInterface
