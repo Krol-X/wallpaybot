@@ -21,19 +21,9 @@ class TelegramParseService implements TelegramParseServiceInterface
      */
     public function parseUpdatesData(array $data): array
     {
-        if (!(isset($data['ok']) && $data['ok']))
+        $result = $data['result'] ?? [$data];
+        if (count($result) === 0)
             return [];
-
-        $result = $data['result'];
-
-        if (!is_array($result)) {
-            if (!$result)
-                return [];
-            $result = [$result];
-        }
-        if (count($result) === 0) {
-            return [];
-        }
 
         return array_map(function ($it) {
             try {
